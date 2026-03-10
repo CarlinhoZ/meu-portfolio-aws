@@ -1,0 +1,23 @@
+name: Deploy para o S3
+
+on:
+  push:
+    branches:
+      - main  # Toda vez que você der push na main, ele roda
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Configurar AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2 # Troque para sua região se não for Ohio
+
+      - name: Sincronizar arquivos com S3
+        run: aws s3 sync . s3://portfolio-cloud-1 --delete --exclude ".github/*"
